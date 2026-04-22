@@ -132,12 +132,12 @@
 
       .panel h2 {
         margin: 0 0 6px;
-        font-size: 1.16rem;
+        font-size: 1.08rem;
       }
 
       .panel-subtitle {
         color: var(--muted);
-        font-size: 0.92rem;
+        font-size: 0.84rem;
         margin-bottom: 14px;
       }
 
@@ -163,7 +163,7 @@
       .selector {
         width: 100%;
         text-align: left;
-        padding: 12px 14px;
+        padding: 10px 12px;
         cursor: pointer;
         transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
       }
@@ -177,6 +177,8 @@
 
       .selector strong {
         display: block;
+        font-size: 0.93rem;
+        margin-bottom: 4px;
       }
 
       .selector small,
@@ -185,6 +187,10 @@
       .tag,
       .score-grid span {
         color: var(--muted);
+      }
+
+      .selector small {
+        font-size: 0.76rem;
       }
 
       .summary-title {
@@ -241,9 +247,25 @@
       }
 
       .tag {
-        padding: 7px 11px;
+        padding: 6px 9px;
         background: rgba(246, 249, 252, 0.94);
-        font-size: 0.82rem;
+        font-size: 0.76rem;
+      }
+
+      .mini-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 8px;
+      }
+
+      .mini-tag {
+        padding: 4px 8px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: rgba(244, 248, 251, 0.94);
+        color: var(--muted);
+        font-size: 0.72rem;
       }
 
       .principles {
@@ -294,7 +316,7 @@
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 10px;
-        margin: 14px 0;
+        margin: 12px 0 0;
       }
 
       .score-grid div {
@@ -307,6 +329,44 @@
       .score-grid strong {
         display: block;
         margin-top: 4px;
+        font-size: 0.95rem;
+      }
+
+      .list-scroll {
+        max-height: 360px;
+        overflow-y: auto;
+        padding-right: 4px;
+        margin-bottom: 12px;
+      }
+
+      .match-details {
+        margin-top: 12px;
+      }
+
+      .match-details summary {
+        cursor: pointer;
+        list-style: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        font-size: 0.82rem;
+        color: var(--accent-strong);
+      }
+
+      .match-details summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .match-summary-line {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 10px;
+      }
+
+      .match-summary-line .mini-tag {
+        background: rgba(232, 241, 247, 0.95);
       }
 
       .reason-grid {
@@ -392,14 +452,14 @@
         <div class="panel">
           <h2>岗找人</h2>
           <div class="panel-subtitle">选择岗位，查看内部候选人推荐。</div>
-          <div id="job-list"></div>
+          <div class="list-scroll" id="job-list"></div>
           <div id="job-matches"></div>
         </div>
 
         <div class="panel">
           <h2>人找岗</h2>
           <div class="panel-subtitle">选择员工，查看适配岗位与迁移建议。</div>
-          <div id="employee-list"></div>
+          <div class="list-scroll" id="employee-list"></div>
           <div id="employee-matches"></div>
           <div class="footer-note">
             说明：公开演示版使用模拟数据，重点展示画像标准化、规则排序和结果解释方式。
@@ -415,8 +475,8 @@
           jobCount: 12,
           movementCount: 6,
           activeMobilityCount: 10,
-          highConfidenceCount: 18,
-          readyJobCount: 9
+          highConfidenceCount: 22,
+          readyJobCount: 10
         },
         strategyHighlights: [
           "先把岗位和人才都标准化成统一画像，再进入匹配和排序环节。",
@@ -453,6 +513,36 @@
             priority: "规划中",
             responsibilities: ["组织诊断", "岗位体系设计", "任职资格升级"],
             keywords: ["组织诊断", "岗位体系", "任职资格", "变革推动"]
+          },
+          {
+            id: "job-4",
+            title: "继任发展专家",
+            dept: "人才与组织发展部",
+            location: "深圳",
+            level: "P5-P6",
+            priority: "规划中",
+            responsibilities: ["关键岗位继任", "人才池运营", "培养路径跟踪"],
+            keywords: ["继任计划", "关键岗位", "人才池", "培养路径"]
+          },
+          {
+            id: "job-5",
+            title: "人效分析经理",
+            dept: "人力数据与效能部",
+            location: "北京",
+            level: "P6-P7",
+            priority: "高优先级",
+            responsibilities: ["供需预测", "人员结构分析", "流动效果评估"],
+            keywords: ["供需预测", "结构分析", "指标体系", "人力决策"]
+          },
+          {
+            id: "job-6",
+            title: "学习发展专家",
+            dept: "学习发展中心",
+            location: "广州",
+            level: "P5-P6",
+            priority: "储备池",
+            responsibilities: ["培养项目设计", "学习路径搭建", "培训评估优化"],
+            keywords: ["培养项目", "学习路径", "培训评估", "课程运营"]
           }
         ],
         employees: [
@@ -485,6 +575,36 @@
             preferredFunctions: ["人效分析", "招聘运营", "人才发展"],
             preferredCities: ["上海", "北京"],
             skills: ["人力数据分析", "指标体系", "流程优化", "供需分析", "报表搭建"]
+          },
+          {
+            id: "emp-4",
+            name: "顾念",
+            role: "组织发展经理",
+            org: "人才与组织发展部",
+            mobilityIntent: "open",
+            preferredFunctions: ["组织发展", "人才发展", "HRBP"],
+            preferredCities: ["北京", "深圳"],
+            skills: ["组织诊断", "岗位体系设计", "变革推动", "任职资格", "管理者沟通"]
+          },
+          {
+            id: "emp-5",
+            name: "唐薇",
+            role: "学习发展专家",
+            org: "学习发展中心",
+            mobilityIntent: "active",
+            preferredFunctions: ["学习发展", "人才发展"],
+            preferredCities: ["广州", "北京"],
+            skills: ["培养项目设计", "学习路径", "课程运营", "培训评估", "讲师管理"]
+          },
+          {
+            id: "emp-6",
+            name: "许晨",
+            role: "HRBP",
+            org: "人力资源业务伙伴部",
+            mobilityIntent: "open",
+            preferredFunctions: ["HRBP", "组织发展", "人才发展"],
+            preferredCities: ["深圳", "北京"],
+            skills: ["业务诊断", "人才盘点", "组织协同", "管理者辅导", "关键人才保留"]
           }
         ],
         jobMatches: {
@@ -573,6 +693,72 @@
               reasons: ["具备岗位画像和业务澄清能力", "适合从人才配置视角向组织发展延展"],
               risks: ["组织发展专业经历偏弱", "级别与复杂度需要再核验"]
             }
+          ],
+          "job-4": [
+            {
+              targetLabel: "林岚",
+              note: "建议优先推进，继任与人才池经验强相关。",
+              overallScore: 90,
+              skillScore: 91,
+              experienceScore: 89,
+              intentScore: 82,
+              reasons: ["关键标签命中 继任计划、关键岗位、干部发展", "项目经历贴近 关键岗位继任、人才池建设"],
+              risks: ["需确认深圳办公接受度"]
+            },
+            {
+              targetLabel: "唐薇",
+              note: "建议做交叉评估，适合从培养项目向继任发展延展。",
+              overallScore: 82,
+              skillScore: 80,
+              experienceScore: 81,
+              intentScore: 88,
+              reasons: ["培养路径与关键人才发展主题相关", "具备项目设计与跟踪能力"],
+              risks: ["继任体系实操经验仍需补证据"]
+            }
+          ],
+          "job-5": [
+            {
+              targetLabel: "沈宁",
+              note: "建议优先推进，数据与人效分析证据完整。",
+              overallScore: 93,
+              skillScore: 95,
+              experienceScore: 91,
+              intentScore: 86,
+              reasons: ["关键标签命中 供需分析、指标体系、结构分析", "具备中台分析和流程优化经验"],
+              risks: ["需确认是否愿意回北京办公"]
+            },
+            {
+              targetLabel: "许晨",
+              note: "建议保留为业务理解型候选，适合偏业务分析场景。",
+              overallScore: 78,
+              skillScore: 75,
+              experienceScore: 80,
+              intentScore: 81,
+              reasons: ["具备业务诊断和人才盘点背景", "能理解业务使用场景"],
+              risks: ["数据工具和分析深度仍需补齐"]
+            }
+          ],
+          "job-6": [
+            {
+              targetLabel: "唐薇",
+              note: "建议优先推进，培养项目设计经验直接对口。",
+              overallScore: 94,
+              skillScore: 95,
+              experienceScore: 93,
+              intentScore: 90,
+              reasons: ["关键标签命中 培养项目设计、学习路径、培训评估", "当前经历与目标岗位完全同序列"],
+              risks: ["需确认是否接受岗位侧重点变化"]
+            },
+            {
+              targetLabel: "林岚",
+              note: "建议作为人才发展向培养项目延展的候选。",
+              overallScore: 79,
+              skillScore: 77,
+              experienceScore: 80,
+              intentScore: 74,
+              reasons: ["具备人才发展和项目推动能力", "可迁移到关键人才培养机制场景"],
+              risks: ["课程与培训运营深度相对有限"]
+            }
           ]
         },
         employeeMatches: {
@@ -650,6 +836,72 @@
               intentScore: 83,
               reasons: ["供需分析、结构分析与流程治理能力可迁移", "能支撑人才配置机制的数据侧工作"],
               risks: ["人才发展业务深度仍需补齐"]
+            }
+          ],
+          "emp-4": [
+            {
+              targetLabel: "组织发展经理",
+              note: "建议优先推进，组织类能力证据完整。",
+              overallScore: 95,
+              skillScore: 94,
+              experienceScore: 96,
+              intentScore: 84,
+              reasons: ["组织诊断、岗位体系、任职资格经验高度匹配", "可直接承接组织议题和变革项目"],
+              risks: ["需确认是否愿意继续承担高复杂度组织项目"]
+            },
+            {
+              targetLabel: "人才发展岗",
+              note: "建议作为跨序列候选，适合承接人才机制建设。",
+              overallScore: 81,
+              skillScore: 80,
+              experienceScore: 84,
+              intentScore: 79,
+              reasons: ["组织议题与人才机制高度相关", "具备管理者沟通和项目推动能力"],
+              risks: ["干部发展与继任主题仍需补更多实操案例"]
+            }
+          ],
+          "emp-5": [
+            {
+              targetLabel: "学习发展专家",
+              note: "建议优先推进，培养项目设计证据完整。",
+              overallScore: 94,
+              skillScore: 95,
+              experienceScore: 93,
+              intentScore: 90,
+              reasons: ["培养项目、学习路径、培训评估经验完整", "同序列流动，迁移成本低"],
+              risks: ["需确认是否接受更偏关键人才项目的方向"]
+            },
+            {
+              targetLabel: "继任发展专家",
+              note: "建议交叉评估，适合从培养延展到继任与人才池。",
+              overallScore: 82,
+              skillScore: 80,
+              experienceScore: 81,
+              intentScore: 88,
+              reasons: ["培养路径设计可迁移到人才发展场景", "对关键人才发展议题适配度较高"],
+              risks: ["继任计划和人才池机制经验有待补充"]
+            }
+          ],
+          "emp-6": [
+            {
+              targetLabel: "组织发展经理",
+              note: "建议由 HRBP 与 OD 一起做联合评估。",
+              overallScore: 86,
+              skillScore: 84,
+              experienceScore: 87,
+              intentScore: 85,
+              reasons: ["业务诊断、人才盘点和组织协同经验可直接迁移", "具备管理者辅导与业务接口能力"],
+              risks: ["岗位体系与任职资格经验仍需验证"]
+            },
+            {
+              targetLabel: "人才发展岗",
+              note: "建议作为业务理解型候选进入观察池。",
+              overallScore: 80,
+              skillScore: 79,
+              experienceScore: 82,
+              intentScore: 84,
+              reasons: ["人才盘点和关键人才保留经验相关", "能承接业务与人才发展之间的沟通场景"],
+              risks: ["干部发展和继任机制经验不足"]
             }
           ]
         }
@@ -735,6 +987,7 @@
               <button class="selector ${job.id === currentJobId ? "active" : ""}" onclick="selectJob('${job.id}')">
                 <strong>${job.title}</strong>
                 <small>${job.dept} · ${job.location} · ${job.level}</small>
+                <div class="mini-tags">${job.keywords.slice(0, 3).map((item) => `<span class="mini-tag">${item}</span>`).join("")}</div>
               </button>
             `
           )
@@ -748,6 +1001,7 @@
               <button class="selector ${employee.id === currentEmployeeId ? "active" : ""}" onclick="selectEmployee('${employee.id}')">
                 <strong>${employee.name}</strong>
                 <small>${employee.role} · ${employee.mobilityIntent === "active" ? "主动流动" : "开放机会"}</small>
+                <div class="mini-tags">${employee.skills.slice(0, 3).map((item) => `<span class="mini-tag">${item}</span>`).join("")}</div>
               </button>
             `
           )
@@ -764,21 +1018,33 @@
               </div>
               <span class="score-pill ${scoreTone(match.overallScore)}">${match.overallScore}</span>
             </div>
-            <div class="score-grid">
-              <div><span>技能</span><strong>${match.skillScore}</strong></div>
-              <div><span>经历</span><strong>${match.experienceScore}</strong></div>
-              <div><span>意愿</span><strong>${match.intentScore}</strong></div>
+            <div class="match-summary-line">
+              <span class="mini-tag">技能 ${match.skillScore}</span>
+              <span class="mini-tag">经历 ${match.experienceScore}</span>
+              <span class="mini-tag">意愿 ${match.intentScore}</span>
+              ${match.reasons.slice(0, 2).map((item) => `<span class="mini-tag">${item}</span>`).join("")}
             </div>
-            <div class="reason-grid">
-              <div class="reason-block">
-                <strong>为什么匹配</strong>
-                <ul class="reason-list">${match.reasons.map((item) => `<li>${item}</li>`).join("")}</ul>
+            <details class="match-details">
+              <summary>
+                <span>查看详细信息</span>
+                <span>${match.risks.length ? `风险 ${match.risks.length} 项` : "暂无明显风险"}</span>
+              </summary>
+              <div class="score-grid">
+                <div><span>技能</span><strong>${match.skillScore}</strong></div>
+                <div><span>经历</span><strong>${match.experienceScore}</strong></div>
+                <div><span>意愿</span><strong>${match.intentScore}</strong></div>
               </div>
-              <div class="reason-block">
-                <strong>风险与差距</strong>
-                <ul class="reason-list">${match.risks.map((item) => `<li>${item}</li>`).join("")}</ul>
+              <div class="reason-grid">
+                <div class="reason-block">
+                  <strong>为什么匹配</strong>
+                  <ul class="reason-list">${match.reasons.map((item) => `<li>${item}</li>`).join("")}</ul>
+                </div>
+                <div class="reason-block">
+                  <strong>风险与差距</strong>
+                  <ul class="reason-list">${match.risks.map((item) => `<li>${item}</li>`).join("")}</ul>
+                </div>
               </div>
-            </div>
+            </details>
           </div>
         `;
       }
