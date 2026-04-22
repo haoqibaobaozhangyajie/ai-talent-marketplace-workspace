@@ -1,0 +1,38 @@
+{
+  "name": "learning-xmind-app",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev:server": "tsx watch server/src/index.ts",
+    "dev:web": "vite --config web/vite.config.ts",
+    "build:web": "vite build --config web/vite.config.ts",
+    "build:server": "tsc -p server/tsconfig.json",
+    "build": "npm run build:web && npm run build:server",
+    "start": "node server/dist/server/src/index.js",
+    "start:capture": "node server/dist/server/src/index.js",
+    "check": "tsc -p server/tsconfig.json --noEmit && tsc -p web/tsconfig.json --noEmit",
+    "test": "tsx --test server/src/**/*.test.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/ext-apps": "^1.2.2",
+    "@modelcontextprotocol/sdk": "^1.27.1",
+    "express": "^5.2.1",
+    "npm": "^11.12.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "run": "^1.5.0",
+    "xmind": "^2.2.33",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.5.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vite": "^8.0.1"
+  }
+}
