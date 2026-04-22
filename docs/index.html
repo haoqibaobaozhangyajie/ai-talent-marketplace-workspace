@@ -1,0 +1,822 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>内部人才市场中台</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #edf3f8;
+        --panel: rgba(251, 253, 255, 0.9);
+        --line: rgba(81, 104, 127, 0.16);
+        --text: #172534;
+        --muted: #637487;
+        --accent: #1f5f91;
+        --accent-strong: #174a71;
+        --good: #dcefe3;
+        --warn: #fff0d0;
+        --risk: #ffe7df;
+        --shadow: 0 18px 48px rgba(40, 61, 83, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top left, rgba(180, 210, 231, 0.35), transparent 26%),
+          radial-gradient(circle at bottom right, rgba(196, 220, 236, 0.28), transparent 30%),
+          linear-gradient(180deg, #eef4f8 0%, #dfe8ee 100%);
+        min-height: 100vh;
+      }
+
+      .shell {
+        max-width: 1320px;
+        margin: 0 auto;
+        padding: 28px;
+      }
+
+      .hero {
+        display: flex;
+        justify-content: space-between;
+        gap: 24px;
+        align-items: flex-start;
+        margin-bottom: 20px;
+      }
+
+      .eyebrow {
+        font-size: 12px;
+        letter-spacing: 0.18em;
+        color: var(--accent);
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 8px 0 12px;
+        font-size: clamp(2rem, 3vw, 3rem);
+        font-family: "Georgia", "Noto Serif SC", serif;
+      }
+
+      .hero p {
+        margin: 0;
+        max-width: 760px;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .hero-side {
+        min-width: 240px;
+        padding: 18px;
+        border: 1px solid var(--line);
+        background: var(--panel);
+        border-radius: 22px;
+        box-shadow: var(--shadow);
+      }
+
+      .hero-side strong {
+        display: block;
+        font-size: 14px;
+        margin-bottom: 10px;
+      }
+
+      .hero-side a {
+        color: var(--accent-strong);
+        text-decoration: none;
+        word-break: break-all;
+      }
+
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 14px;
+        margin-bottom: 18px;
+      }
+
+      .metric {
+        padding: 16px;
+        border-radius: 20px;
+        border: 1px solid var(--line);
+        background: var(--panel);
+        box-shadow: var(--shadow);
+      }
+
+      .metric small {
+        display: block;
+        color: var(--muted);
+        margin-bottom: 8px;
+      }
+
+      .metric strong {
+        font-size: 1.9rem;
+        font-family: "Georgia", "Noto Serif SC", serif;
+      }
+
+      .workspace {
+        display: grid;
+        grid-template-columns: 1fr 1.15fr 1.15fr;
+        gap: 18px;
+      }
+
+      .panel {
+        border: 1px solid var(--line);
+        background: var(--panel);
+        border-radius: 24px;
+        box-shadow: var(--shadow);
+        padding: 18px;
+      }
+
+      .panel h2 {
+        margin: 0 0 6px;
+        font-size: 1.16rem;
+      }
+
+      .panel-subtitle {
+        color: var(--muted);
+        font-size: 0.92rem;
+        margin-bottom: 14px;
+      }
+
+      .card,
+      .selector,
+      .match-card {
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.78);
+      }
+
+      .card,
+      .match-card {
+        padding: 14px;
+      }
+
+      .card + .card,
+      .selector + .selector,
+      .match-card + .match-card {
+        margin-top: 12px;
+      }
+
+      .selector {
+        width: 100%;
+        text-align: left;
+        padding: 12px 14px;
+        cursor: pointer;
+        transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
+      }
+
+      .selector:hover,
+      .selector.active {
+        transform: translateY(-1px);
+        border-color: rgba(31, 95, 145, 0.28);
+        background: rgba(241, 247, 252, 0.96);
+      }
+
+      .selector strong {
+        display: block;
+      }
+
+      .selector small,
+      .muted,
+      .reason-list li,
+      .tag,
+      .score-grid span {
+        color: var(--muted);
+      }
+
+      .summary-title {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: flex-start;
+        margin-bottom: 10px;
+      }
+
+      .summary-title strong {
+        font-size: 1.12rem;
+      }
+
+      .chip,
+      .score-pill,
+      .intent-pill,
+      .tag {
+        border-radius: 999px;
+        border: 1px solid var(--line);
+      }
+
+      .chip,
+      .intent-pill {
+        padding: 8px 12px;
+        font-size: 0.84rem;
+      }
+
+      .chip {
+        background: rgba(227, 238, 246, 0.92);
+        color: var(--accent-strong);
+      }
+
+      .intent-pill.active {
+        background: var(--good);
+        color: #276347;
+      }
+
+      .intent-pill.open {
+        background: var(--warn);
+        color: #8b6723;
+      }
+
+      .intent-pill.steady {
+        background: rgba(242, 244, 247, 0.95);
+        color: var(--muted);
+      }
+
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .tag {
+        padding: 7px 11px;
+        background: rgba(246, 249, 252, 0.94);
+        font-size: 0.82rem;
+      }
+
+      .principles {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 10px;
+      }
+
+      .principles li,
+      .reason-list li {
+        padding: 10px 12px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.8);
+      }
+
+      .match-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: flex-start;
+      }
+
+      .score-pill {
+        min-width: 56px;
+        text-align: center;
+        padding: 10px 12px;
+        font-weight: 700;
+      }
+
+      .score-pill.high {
+        background: var(--good);
+        color: #276347;
+      }
+
+      .score-pill.mid {
+        background: var(--warn);
+        color: #8b6723;
+      }
+
+      .score-pill.low {
+        background: var(--risk);
+        color: #a64b2d;
+      }
+
+      .score-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+        margin: 14px 0;
+      }
+
+      .score-grid div {
+        padding: 10px 12px;
+        border-radius: 14px;
+        border: 1px solid var(--line);
+        background: rgba(246, 250, 253, 0.92);
+      }
+
+      .score-grid strong {
+        display: block;
+        margin-top: 4px;
+      }
+
+      .reason-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .reason-block {
+        padding: 12px;
+        border-radius: 16px;
+        border: 1px solid var(--line);
+        background: rgba(251, 253, 255, 0.92);
+      }
+
+      .reason-block strong {
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      .reason-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 8px;
+      }
+
+      .footer-note {
+        margin-top: 18px;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      @media (max-width: 1180px) {
+        .metrics,
+        .workspace {
+          grid-template-columns: 1fr;
+        }
+
+        .hero {
+          flex-direction: column;
+        }
+
+        .reason-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <section class="hero">
+        <div>
+          <div class="eyebrow">AI INTERNAL TALENT MARKETPLACE</div>
+          <h1>内部人才市场中台</h1>
+          <p>
+            基于岗位画像、人才画像和双向匹配机制，帮助企业在内部完成岗位寻源、人才流动与配置判断。
+            当前页面为公开演示版，聚焦展示中台能力、匹配逻辑与可解释结果。
+          </p>
+        </div>
+        <aside class="hero-side">
+          <strong>公开访问</strong>
+          <div class="muted">GitHub Pages Demo</div>
+          <a href="https://github.com/haoqibaobaozhangyajie/ai-talent-marketplace-workspace" target="_blank" rel="noreferrer">
+            查看源码仓库
+          </a>
+        </aside>
+      </section>
+
+      <section class="metrics" id="metrics"></section>
+
+      <section class="workspace">
+        <div class="panel">
+          <h2>中台总览</h2>
+          <div class="panel-subtitle">统一标准、可解释匹配、人机协同判断。</div>
+
+          <div class="card" id="principles-card"></div>
+          <div class="card" id="job-summary"></div>
+          <div class="card" id="employee-summary"></div>
+        </div>
+
+        <div class="panel">
+          <h2>岗找人</h2>
+          <div class="panel-subtitle">选择岗位，查看内部候选人推荐。</div>
+          <div id="job-list"></div>
+          <div id="job-matches"></div>
+        </div>
+
+        <div class="panel">
+          <h2>人找岗</h2>
+          <div class="panel-subtitle">选择员工，查看适配岗位与迁移建议。</div>
+          <div id="employee-list"></div>
+          <div id="employee-matches"></div>
+          <div class="footer-note">
+            说明：公开演示版使用模拟数据，重点展示画像标准化、规则排序和结果解释方式。
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      const workspace = {
+        overview: {
+          employeeCount: 32,
+          jobCount: 12,
+          movementCount: 6,
+          activeMobilityCount: 10,
+          highConfidenceCount: 18,
+          readyJobCount: 9
+        },
+        strategyHighlights: [
+          "先把岗位和人才都标准化成统一画像，再进入匹配和排序环节。",
+          "匹配结果输出原因、风险和差距项，支持 HR 与业务做协同判断。",
+          "先验证中台推荐价值，再逐步接入 HRIS、培训、绩效与审批流程。"
+        ],
+        jobs: [
+          {
+            id: "job-1",
+            title: "人才发展岗",
+            dept: "人才与组织发展部",
+            location: "北京",
+            level: "P6-P7",
+            priority: "高优先级",
+            responsibilities: ["人才盘点", "干部发展", "内部流动机制"],
+            keywords: ["人才盘点", "胜任力模型", "内部流动", "干部发展"]
+          },
+          {
+            id: "job-2",
+            title: "内部招聘运营经理",
+            dept: "招聘与雇主品牌部",
+            location: "上海",
+            level: "P6-P7",
+            priority: "高优先级",
+            responsibilities: ["内部岗位流转机制", "流程设计", "系统规则优化"],
+            keywords: ["招聘流程", "岗位画像", "系统优化", "数据诊断"]
+          },
+          {
+            id: "job-3",
+            title: "组织发展经理",
+            dept: "人才与组织发展部",
+            location: "北京",
+            level: "P7-M1",
+            priority: "规划中",
+            responsibilities: ["组织诊断", "岗位体系设计", "任职资格升级"],
+            keywords: ["组织诊断", "岗位体系", "任职资格", "变革推动"]
+          }
+        ],
+        employees: [
+          {
+            id: "emp-1",
+            name: "周岚",
+            role: "招聘经理",
+            org: "招聘与雇主品牌部",
+            mobilityIntent: "active",
+            preferredFunctions: ["人才发展", "组织发展"],
+            preferredCities: ["北京", "杭州"],
+            skills: ["岗位画像", "人才映射", "跨团队推进", "招聘流程优化", "数据复盘"]
+          },
+          {
+            id: "emp-2",
+            name: "林岚",
+            role: "人才发展经理",
+            org: "组织与人才发展部",
+            mobilityIntent: "open",
+            preferredFunctions: ["人才发展", "组织发展"],
+            preferredCities: ["北京", "上海"],
+            skills: ["人才盘点", "干部发展", "继任计划", "项目推动", "胜任力建模"]
+          },
+          {
+            id: "emp-3",
+            name: "沈宁",
+            role: "人效分析经理",
+            org: "人力数据与效能部",
+            mobilityIntent: "open",
+            preferredFunctions: ["人效分析", "招聘运营", "人才发展"],
+            preferredCities: ["上海", "北京"],
+            skills: ["人力数据分析", "指标体系", "流程优化", "供需分析", "报表搭建"]
+          }
+        ],
+        jobMatches: {
+          "job-1": [
+            {
+              targetLabel: "林岚",
+              note: "建议进入优先沟通，先验证风险项与到岗时间。",
+              overallScore: 92,
+              skillScore: 94,
+              experienceScore: 90,
+              intentScore: 82,
+              reasons: ["关键标签命中 人才盘点、胜任力建模、干部发展", "项目经历贴近 干部盘点项目、关键岗位继任", "当前职能与目标岗位序列相邻，迁移成本较低"],
+              risks: ["需确认当前团队释放窗口期", "建议补充对内部流动机制的 owner 证据"]
+            },
+            {
+              targetLabel: "周岚",
+              note: "建议由 HR 做一轮校准沟通，再决定是否推进业务面。",
+              overallScore: 84,
+              skillScore: 82,
+              experienceScore: 80,
+              intentScore: 91,
+              reasons: ["关键标签命中 岗位画像、人才映射、跨团队推进", "项目经历贴近 内部流动试点、关键岗位 mapping", "具备明确转岗意愿，地点也匹配"],
+              risks: ["缺少完整人才盘点 owner 证据", "需要验证干部发展或继任项目深度"]
+            },
+            {
+              targetLabel: "沈宁",
+              note: "建议保留为备选，等待更多证据或后续岗位。",
+              overallScore: 76,
+              skillScore: 74,
+              experienceScore: 78,
+              intentScore: 83,
+              reasons: ["关键标签命中 供需分析、流程优化", "具备数据化视角，适合支撑机制建设"],
+              risks: ["人才发展项目经验偏少", "更适合偏分析和中台支持岗位"]
+            }
+          ],
+          "job-2": [
+            {
+              targetLabel: "周岚",
+              note: "建议进入优先沟通，先验证内部流动项目 owner 深度。",
+              overallScore: 91,
+              skillScore: 92,
+              experienceScore: 88,
+              intentScore: 90,
+              reasons: ["关键标签命中 岗位画像、招聘流程优化、人才映射", "项目经历贴近 内部流动试点、招聘数据复盘", "当前职能与目标岗位强相关"],
+              risks: ["需确认上海办公接受度"]
+            },
+            {
+              targetLabel: "沈宁",
+              note: "建议由 HR 做一轮校准沟通，再决定是否推进业务面。",
+              overallScore: 81,
+              skillScore: 79,
+              experienceScore: 82,
+              intentScore: 80,
+              reasons: ["关键标签命中 数据诊断、流程优化", "适合承担中台规则与指标治理"],
+              risks: ["直接招聘运营经验不足"]
+            },
+            {
+              targetLabel: "林岚",
+              note: "建议保留为备选，适合偏机制与项目方向。",
+              overallScore: 74,
+              skillScore: 76,
+              experienceScore: 72,
+              intentScore: 73,
+              reasons: ["具备项目推动与机制设计能力", "可迁移到内部流动与机制建设部分"],
+              risks: ["招聘流程一线经验不够强"]
+            }
+          ],
+          "job-3": [
+            {
+              targetLabel: "林岚",
+              note: "建议由 HRBP 与业务一起做一轮组织议题校准。",
+              overallScore: 83,
+              skillScore: 80,
+              experienceScore: 86,
+              intentScore: 79,
+              reasons: ["具备人才盘点与继任计划背景", "项目推动与管理者沟通基础较好"],
+              risks: ["组织诊断和岗位体系经验仍需补证据"]
+            },
+            {
+              targetLabel: "周岚",
+              note: "建议保留为转型候选，先评估组织类项目经验。",
+              overallScore: 72,
+              skillScore: 71,
+              experienceScore: 70,
+              intentScore: 86,
+              reasons: ["具备岗位画像和业务澄清能力", "适合从人才配置视角向组织发展延展"],
+              risks: ["组织发展专业经历偏弱", "级别与复杂度需要再核验"]
+            }
+          ]
+        },
+        employeeMatches: {
+          "emp-1": [
+            {
+              targetLabel: "人才发展岗",
+              note: "建议先验证人才盘点 owner 证据，再决定是否推进。",
+              overallScore: 84,
+              skillScore: 82,
+              experienceScore: 80,
+              intentScore: 91,
+              reasons: ["岗位画像、人才映射与内部流动试点经验具备迁移基础", "希望转向人才发展方向，地点匹配"],
+              risks: ["缺少完整人才盘点或干部发展项目 owner 证据"]
+            },
+            {
+              targetLabel: "内部招聘运营经理",
+              note: "建议优先推进，匹配度高且切换成本低。",
+              overallScore: 91,
+              skillScore: 92,
+              experienceScore: 88,
+              intentScore: 90,
+              reasons: ["招聘流程、岗位画像与项目推动经验高度相关", "能直接承接内部流动机制与招聘协同场景"],
+              risks: ["需确认上海办公接受度"]
+            },
+            {
+              targetLabel: "组织发展经理",
+              note: "建议作为长期发展方向，先补组织类项目经历。",
+              overallScore: 72,
+              skillScore: 71,
+              experienceScore: 70,
+              intentScore: 86,
+              reasons: ["具备业务澄清与结构化沟通能力", "适合向人才与组织议题延展"],
+              risks: ["组织诊断与岗位体系经验不足"]
+            }
+          ],
+          "emp-2": [
+            {
+              targetLabel: "人才发展岗",
+              note: "建议优先推进，能力证据完整。",
+              overallScore: 92,
+              skillScore: 94,
+              experienceScore: 90,
+              intentScore: 82,
+              reasons: ["人才盘点、继任、干部发展经验完整", "同序列迁移，适配度高"],
+              risks: ["需确认是否愿意从现岗位流动"]
+            },
+            {
+              targetLabel: "组织发展经理",
+              note: "建议做交叉评估，适合作为上探方向。",
+              overallScore: 83,
+              skillScore: 80,
+              experienceScore: 86,
+              intentScore: 79,
+              reasons: ["人才与组织议题高度相关", "具备项目推动与管理者沟通基础"],
+              risks: ["组织诊断与岗位体系经验仍需补证据"]
+            }
+          ],
+          "emp-3": [
+            {
+              targetLabel: "内部招聘运营经理",
+              note: "建议做一轮沟通，适合支撑机制与指标治理。",
+              overallScore: 81,
+              skillScore: 79,
+              experienceScore: 82,
+              intentScore: 80,
+              reasons: ["数据诊断、流程优化与规则治理能力较强", "适合中台型运营与供需分析场景"],
+              risks: ["招聘一线与岗位画像经验不足"]
+            },
+            {
+              targetLabel: "人才发展岗",
+              note: "建议作为偏中台支持方向的备选岗位。",
+              overallScore: 76,
+              skillScore: 74,
+              experienceScore: 78,
+              intentScore: 83,
+              reasons: ["供需分析、结构分析与流程治理能力可迁移", "能支撑人才配置机制的数据侧工作"],
+              risks: ["人才发展业务深度仍需补齐"]
+            }
+          ]
+        }
+      };
+
+      let currentJobId = "job-1";
+      let currentEmployeeId = "emp-1";
+
+      function scoreTone(score) {
+        if (score >= 84) return "high";
+        if (score >= 72) return "mid";
+        return "low";
+      }
+
+      function renderMetrics() {
+        const metrics = [
+          ["人才画像", workspace.overview.employeeCount, "模拟员工画像"],
+          ["内部岗位", workspace.overview.jobCount, "结构化岗位画像"],
+          ["历史样本", workspace.overview.movementCount, "成功流动先例"],
+          ["主动流动", workspace.overview.activeMobilityCount, "可优先沟通"],
+          ["高置信匹配", workspace.overview.highConfidenceCount, "分数 >= 84"],
+          ["就绪岗位", workspace.overview.readyJobCount, "职责与要求清晰"]
+        ];
+
+        document.getElementById("metrics").innerHTML = metrics
+          .map(
+            ([label, value, note]) => `
+              <div class="metric">
+                <small>${label}</small>
+                <strong>${value}</strong>
+                <div class="muted">${note}</div>
+              </div>
+            `
+          )
+          .join("");
+      }
+
+      function renderPrinciples() {
+        document.getElementById("principles-card").innerHTML = `
+          <div class="muted" style="margin-bottom: 10px;">设计原则</div>
+          <ul class="principles">
+            ${workspace.strategyHighlights.map((item) => `<li>${item}</li>`).join("")}
+          </ul>
+        `;
+      }
+
+      function renderJobSummary() {
+        const job = workspace.jobs.find((item) => item.id === currentJobId);
+        document.getElementById("job-summary").innerHTML = `
+          <div class="summary-title">
+            <div>
+              <strong>${job.title}</strong>
+              <div class="muted">${job.dept} · ${job.location} · ${job.level}</div>
+            </div>
+            <span class="chip">${job.priority}</span>
+          </div>
+          <div class="muted">重点职责：${job.responsibilities.join("、")}</div>
+          <div class="tags">${job.keywords.map((item) => `<span class="tag">${item}</span>`).join("")}</div>
+        `;
+      }
+
+      function renderEmployeeSummary() {
+        const employee = workspace.employees.find((item) => item.id === currentEmployeeId);
+        document.getElementById("employee-summary").innerHTML = `
+          <div class="summary-title">
+            <div>
+              <strong>${employee.name}</strong>
+              <div class="muted">${employee.role} · ${employee.org}</div>
+            </div>
+            <span class="intent-pill ${employee.mobilityIntent}">
+              ${employee.mobilityIntent === "active" ? "主动流动" : employee.mobilityIntent === "open" ? "开放机会" : "暂稳"}
+            </span>
+          </div>
+          <div class="muted">目标方向：${employee.preferredFunctions.join("、")}；期望城市：${employee.preferredCities.join("、")}</div>
+          <div class="tags">${employee.skills.map((item) => `<span class="tag">${item}</span>`).join("")}</div>
+        `;
+      }
+
+      function renderJobList() {
+        document.getElementById("job-list").innerHTML = workspace.jobs
+          .map(
+            (job) => `
+              <button class="selector ${job.id === currentJobId ? "active" : ""}" onclick="selectJob('${job.id}')">
+                <strong>${job.title}</strong>
+                <small>${job.dept} · ${job.location} · ${job.level}</small>
+              </button>
+            `
+          )
+          .join("");
+      }
+
+      function renderEmployeeList() {
+        document.getElementById("employee-list").innerHTML = workspace.employees
+          .map(
+            (employee) => `
+              <button class="selector ${employee.id === currentEmployeeId ? "active" : ""}" onclick="selectEmployee('${employee.id}')">
+                <strong>${employee.name}</strong>
+                <small>${employee.role} · ${employee.mobilityIntent === "active" ? "主动流动" : "开放机会"}</small>
+              </button>
+            `
+          )
+          .join("");
+      }
+
+      function renderMatchCard(match) {
+        return `
+          <div class="match-card">
+            <div class="match-head">
+              <div>
+                <strong>${match.targetLabel}</strong>
+                <div class="muted" style="margin-top: 4px;">${match.note}</div>
+              </div>
+              <span class="score-pill ${scoreTone(match.overallScore)}">${match.overallScore}</span>
+            </div>
+            <div class="score-grid">
+              <div><span>技能</span><strong>${match.skillScore}</strong></div>
+              <div><span>经历</span><strong>${match.experienceScore}</strong></div>
+              <div><span>意愿</span><strong>${match.intentScore}</strong></div>
+            </div>
+            <div class="reason-grid">
+              <div class="reason-block">
+                <strong>为什么匹配</strong>
+                <ul class="reason-list">${match.reasons.map((item) => `<li>${item}</li>`).join("")}</ul>
+              </div>
+              <div class="reason-block">
+                <strong>风险与差距</strong>
+                <ul class="reason-list">${match.risks.map((item) => `<li>${item}</li>`).join("")}</ul>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderJobMatches() {
+        const matches = workspace.jobMatches[currentJobId] || [];
+        document.getElementById("job-matches").innerHTML = matches.map(renderMatchCard).join("");
+      }
+
+      function renderEmployeeMatches() {
+        const matches = workspace.employeeMatches[currentEmployeeId] || [];
+        document.getElementById("employee-matches").innerHTML = matches.map(renderMatchCard).join("");
+      }
+
+      function renderAll() {
+        renderMetrics();
+        renderPrinciples();
+        renderJobSummary();
+        renderEmployeeSummary();
+        renderJobList();
+        renderEmployeeList();
+        renderJobMatches();
+        renderEmployeeMatches();
+      }
+
+      function selectJob(jobId) {
+        currentJobId = jobId;
+        renderAll();
+      }
+
+      function selectEmployee(employeeId) {
+        currentEmployeeId = employeeId;
+        renderAll();
+      }
+
+      window.selectJob = selectJob;
+      window.selectEmployee = selectEmployee;
+      renderAll();
+    </script>
+  </body>
+</html>
