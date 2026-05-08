@@ -97,6 +97,49 @@
         margin-bottom: 18px;
       }
 
+      .goal-grid,
+      .extension-grid {
+        display: grid;
+        gap: 14px;
+      }
+
+      .goal-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        margin-bottom: 18px;
+      }
+
+      .extension-grid {
+        grid-template-columns: 1fr 1.1fr;
+        margin-top: 18px;
+      }
+
+      .goal-card {
+        padding: 16px;
+        border-radius: 20px;
+        border: 1px solid var(--line);
+        background: var(--panel);
+        box-shadow: var(--shadow);
+      }
+
+      .goal-card small {
+        display: block;
+        color: var(--muted);
+        margin-bottom: 8px;
+      }
+
+      .goal-card strong {
+        display: block;
+        font-size: 1rem;
+        margin-bottom: 10px;
+      }
+
+      .goal-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.82rem;
+        line-height: 1.65;
+      }
+
       .metric {
         padding: 16px;
         border-radius: 20px;
@@ -402,8 +445,10 @@
       }
 
       @media (max-width: 1180px) {
+        .goal-grid,
         .metrics,
-        .workspace {
+        .workspace,
+        .extension-grid {
           grid-template-columns: 1fr;
         }
 
@@ -424,8 +469,8 @@
           <div class="eyebrow">AI INTERNAL TALENT MARKETPLACE</div>
           <h1>内部人才市场中台</h1>
           <p>
-            基于岗位画像、人才画像和双向匹配机制，帮助企业在内部完成岗位寻源、人才流动与配置判断。
-            当前页面为公开演示版，聚焦展示中台能力、匹配逻辑与可解释结果。
+            基于岗位 / 项目 / 任务等工作机会，结合人才画像、学习资源和匹配规则，帮助企业完成内部流动、机会配置与外部优才映射。
+            当前页面聚焦展示四类核心能力：人找岗、岗找人、需求生成画像，以及按优秀员工画像寻找外部市场优才。
           </p>
         </div>
         <aside class="hero-side">
@@ -437,6 +482,7 @@
         </aside>
       </section>
 
+      <section class="goal-grid" id="goal-grid"></section>
       <section class="metrics" id="metrics"></section>
 
       <section class="workspace">
@@ -466,22 +512,59 @@
           </div>
         </div>
       </section>
+
+      <section class="extension-grid">
+        <div class="panel">
+          <h2>学习资源池</h2>
+          <div class="panel-subtitle">让人找岗不止看到差距，还能看到补齐路径。</div>
+          <div id="learning-pool"></div>
+        </div>
+
+        <div class="panel">
+          <h2>外部优才映射</h2>
+          <div class="panel-subtitle">按优秀员工画像寻找外部市场相似优质人才，服务外部招聘和对标。</div>
+          <div id="benchmark-list" class="list-scroll"></div>
+          <div id="external-matches"></div>
+        </div>
+      </section>
     </div>
 
     <script>
       const workspace = {
         overview: {
           employeeCount: 32,
-          jobCount: 12,
+          jobCount: 18,
           movementCount: 6,
           activeMobilityCount: 10,
           highConfidenceCount: 22,
           readyJobCount: 10
         },
         strategyHighlights: [
-          "先把岗位和人才都标准化成统一画像，再进入匹配和排序环节。",
-          "匹配结果输出原因、风险和差距项，支持 HR 与业务做协同判断。",
-          "先验证中台推荐价值，再逐步接入 HRIS、培训、绩效与审批流程。"
+          "平台不只管理岗位，还要管理项目、任务与培养机会，形成完整的工作机会池。",
+          "人才画像建议按基础、经历、成就、能力、潜力五个维度组织，便于做统一匹配。",
+          "内部人才市场的本质是三池匹配：工作机会池、人才池、学习资源池。"
+        ],
+        goals: [
+          {
+            title: "人找岗",
+            note: "差距诊断 + 发展导航",
+            description: "员工可以看见适合岗位、差距项、桥接岗位，以及对应课程、认证和培养项目。"
+          },
+          {
+            title: "岗找人",
+            note: "推荐 + 风险解释",
+            description: "用人部门能快速看到内部候选名单、匹配原因、风险点和是否建议进入内部面试。"
+          },
+          {
+            title: "需求生成画像",
+            note: "岗位 / 项目 / 任务标准化",
+            description: "把业务需求转成结构化机会画像，而不是只靠模糊 JD 关键词搜人。"
+          },
+          {
+            title: "优秀员工映射外部优才",
+            note: "Benchmark sourcing",
+            description: "按内部优秀员工画像构建外部搜索模板，帮助外部招聘更快定位同类优质人才。"
+          }
         ],
         jobs: [
           {
@@ -491,6 +574,7 @@
             location: "北京",
             level: "P6-P7",
             priority: "高优先级",
+            type: "岗位",
             responsibilities: ["人才盘点", "干部发展", "内部流动机制"],
             keywords: ["人才盘点", "胜任力模型", "内部流动", "干部发展"]
           },
@@ -501,6 +585,7 @@
             location: "上海",
             level: "P6-P7",
             priority: "高优先级",
+            type: "岗位",
             responsibilities: ["内部岗位流转机制", "流程设计", "系统规则优化"],
             keywords: ["招聘流程", "岗位画像", "系统优化", "数据诊断"]
           },
@@ -511,28 +596,31 @@
             location: "北京",
             level: "P7-M1",
             priority: "规划中",
+            type: "岗位",
             responsibilities: ["组织诊断", "岗位体系设计", "任职资格升级"],
             keywords: ["组织诊断", "岗位体系", "任职资格", "变革推动"]
           },
           {
             id: "job-4",
-            title: "继任发展专家",
+            title: "关键岗位继任项目",
             dept: "人才与组织发展部",
             location: "深圳",
-            level: "P5-P6",
-            priority: "规划中",
+            level: "3个月项目制",
+            priority: "项目机会",
+            type: "项目",
             responsibilities: ["关键岗位继任", "人才池运营", "培养路径跟踪"],
             keywords: ["继任计划", "关键岗位", "人才池", "培养路径"]
           },
           {
             id: "job-5",
-            title: "人效分析经理",
+            title: "组织诊断专项任务",
             dept: "人力数据与效能部",
             location: "北京",
-            level: "P6-P7",
-            priority: "高优先级",
-            responsibilities: ["供需预测", "人员结构分析", "流动效果评估"],
-            keywords: ["供需预测", "结构分析", "指标体系", "人力决策"]
+            level: "6周任务制",
+            priority: "任务机会",
+            type: "任务",
+            responsibilities: ["组织诊断", "数据分析", "诊断结论汇报"],
+            keywords: ["组织诊断", "数据分析", "汇报材料", "跨部门访谈"]
           },
           {
             id: "job-6",
@@ -541,6 +629,7 @@
             location: "广州",
             level: "P5-P6",
             priority: "储备池",
+            type: "岗位",
             responsibilities: ["培养项目设计", "学习路径搭建", "培训评估优化"],
             keywords: ["培养项目", "学习路径", "培训评估", "课程运营"]
           }
@@ -607,6 +696,102 @@
             skills: ["业务诊断", "人才盘点", "组织协同", "管理者辅导", "关键人才保留"]
           }
         ],
+        learningPool: {
+          "emp-1": {
+            target: "人才发展 / 组织发展方向",
+            gaps: ["人才盘点 owner 经验", "干部发展方法论", "继任计划实操"],
+            bridgeRoles: ["人才盘点项目经理", "继任发展项目", "组织发展专项任务"],
+            courses: ["关键岗位人才盘点工作坊", "干部发展与继任设计", "组织诊断基础课程"],
+            certifications: ["任职资格评审训练", "测评工具使用认证"]
+          },
+          "emp-2": {
+            target: "组织发展 / 继任管理方向",
+            gaps: ["组织诊断方法体系", "岗位体系设计案例"],
+            bridgeRoles: ["组织诊断专项任务", "任职资格项目", "HRBP 联合盘点项目"],
+            courses: ["组织设计与岗位体系", "管理者沟通与校准", "人才地图实操"],
+            certifications: ["组织发展顾问认证"]
+          },
+          "emp-3": {
+            target: "招聘运营 / 人才配置分析方向",
+            gaps: ["业务访谈深度", "人才发展业务理解"],
+            bridgeRoles: ["内部招聘运营经理", "人才配置分析专项", "组织诊断任务"],
+            courses: ["招聘流程与岗位画像", "人才供需预测建模", "HR 场景分析表达"],
+            certifications: ["数据分析进阶认证"]
+          },
+          "emp-4": {
+            target: "人才发展 / 组织发展高级方向",
+            gaps: ["继任发展项目案例", "关键人才培养路径设计"],
+            bridgeRoles: ["关键岗位继任项目", "人才盘点校准项目"],
+            courses: ["继任管理与人才池设计", "人才发展项目复盘"],
+            certifications: ["继任管理认证"]
+          },
+          "emp-5": {
+            target: "关键人才培养 / 继任发展方向",
+            gaps: ["人才池运营", "继任资格校验"],
+            bridgeRoles: ["关键岗位继任项目", "领导力培养计划"],
+            courses: ["关键人才培养路径设计", "导师制与带教机制"],
+            certifications: ["学习发展项目认证"]
+          },
+          "emp-6": {
+            target: "组织发展 / 人才发展方向",
+            gaps: ["岗位体系方法论", "继任与培养项目设计"],
+            bridgeRoles: ["组织诊断专项任务", "人才盘点项目", "关键岗位继任项目"],
+            courses: ["组织诊断方法", "人才盘点与校准", "关键人才保留机制"],
+            certifications: ["HRBP 组织发展认证"]
+          }
+        },
+        externalBenchmarks: {
+          "emp-2": [
+            {
+              targetLabel: "外部候选人 A · 某大型保险集团",
+              note: "适合作为人才发展岗的外部标杆画像候选。",
+              overallScore: 91,
+              skillScore: 92,
+              experienceScore: 90,
+              intentScore: 0,
+              reasons: ["具备人才盘点、继任计划、干部发展项目完整经历", "长期负责关键岗位梯队建设，与 benchmark 画像接近"],
+              risks: ["行业适配度高，但需验证组织复杂度与级别匹配"],
+              keywords: ["人才盘点", "继任计划", "关键岗位梯队", "干部发展"]
+            },
+            {
+              targetLabel: "外部候选人 B · 某互联网平台",
+              note: "适合高潜人才发展项目，但行业迁移成本需评估。",
+              overallScore: 84,
+              skillScore: 86,
+              experienceScore: 82,
+              intentScore: 0,
+              reasons: ["在高潜识别与人才校准方面经验强", "擅长快速组织升级场景下的人才发展机制"],
+              risks: ["行业背景差异较大，需要验证金融/保险语境适配"],
+              keywords: ["高潜识别", "人才校准", "组织升级", "领导力发展"]
+            }
+          ],
+          "emp-4": [
+            {
+              targetLabel: "外部候选人 C · 某咨询公司",
+              note: "适合组织发展经理类岗位的外部映射。",
+              overallScore: 89,
+              skillScore: 88,
+              experienceScore: 91,
+              intentScore: 0,
+              reasons: ["组织诊断、岗位体系和任职资格项目经验扎实", "可作为组织发展专业标杆外找模板"],
+              risks: ["需要验证是否有甲方长期推进经验"],
+              keywords: ["组织诊断", "岗位体系", "任职资格", "组织变革"]
+            }
+          ],
+          "emp-5": [
+            {
+              targetLabel: "外部候选人 D · 某消费品公司",
+              note: "适合作为学习发展 / 关键人才培养方向的外部参考。",
+              overallScore: 87,
+              skillScore: 89,
+              experienceScore: 85,
+              intentScore: 0,
+              reasons: ["培养项目设计和学习路径搭建经验完整", "适合对标关键人才培养场景"],
+              risks: ["继任与人才池经验仍需补证据"],
+              keywords: ["培养项目", "学习路径", "培训评估", "导师机制"]
+            }
+          ]
+        },
         jobMatches: {
           "job-1": [
             {
@@ -872,7 +1057,7 @@
               risks: ["需确认是否接受更偏关键人才项目的方向"]
             },
             {
-              targetLabel: "继任发展专家",
+              targetLabel: "关键岗位继任项目",
               note: "建议交叉评估，适合从培养延展到继任与人才池。",
               overallScore: 82,
               skillScore: 80,
@@ -909,6 +1094,7 @@
 
       let currentJobId = "job-1";
       let currentEmployeeId = "emp-1";
+      let currentBenchmarkId = "emp-2";
 
       function scoreTone(score) {
         if (score >= 84) return "high";
@@ -919,11 +1105,11 @@
       function renderMetrics() {
         const metrics = [
           ["人才画像", workspace.overview.employeeCount, "模拟员工画像"],
-          ["内部岗位", workspace.overview.jobCount, "结构化岗位画像"],
+          ["工作机会", workspace.overview.jobCount, "岗位 / 项目 / 任务"],
           ["历史样本", workspace.overview.movementCount, "成功流动先例"],
           ["主动流动", workspace.overview.activeMobilityCount, "可优先沟通"],
           ["高置信匹配", workspace.overview.highConfidenceCount, "分数 >= 84"],
-          ["就绪岗位", workspace.overview.readyJobCount, "职责与要求清晰"]
+          ["就绪机会", workspace.overview.readyJobCount, "画像已结构化"]
         ];
 
         document.getElementById("metrics").innerHTML = metrics
@@ -933,6 +1119,20 @@
                 <small>${label}</small>
                 <strong>${value}</strong>
                 <div class="muted">${note}</div>
+              </div>
+            `
+          )
+          .join("");
+      }
+
+      function renderGoalGrid() {
+        document.getElementById("goal-grid").innerHTML = workspace.goals
+          .map(
+            (goal) => `
+              <div class="goal-card">
+                <small>${goal.note}</small>
+                <strong>${goal.title}</strong>
+                <p>${goal.description}</p>
               </div>
             `
           )
@@ -956,7 +1156,10 @@
               <strong>${job.title}</strong>
               <div class="muted">${job.dept} · ${job.location} · ${job.level}</div>
             </div>
-            <span class="chip">${job.priority}</span>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end;">
+              <span class="chip">${job.type}</span>
+              <span class="chip">${job.priority}</span>
+            </div>
           </div>
           <div class="muted">重点职责：${job.responsibilities.join("、")}</div>
           <div class="tags">${job.keywords.map((item) => `<span class="tag">${item}</span>`).join("")}</div>
@@ -987,7 +1190,11 @@
               <button class="selector ${job.id === currentJobId ? "active" : ""}" onclick="selectJob('${job.id}')">
                 <strong>${job.title}</strong>
                 <small>${job.dept} · ${job.location} · ${job.level}</small>
-                <div class="mini-tags">${job.keywords.slice(0, 3).map((item) => `<span class="mini-tag">${item}</span>`).join("")}</div>
+                <div class="mini-tags">
+                  <span class="mini-tag">${job.type}</span>
+                  <span class="mini-tag">${job.priority}</span>
+                  ${job.keywords.slice(0, 2).map((item) => `<span class="mini-tag">${item}</span>`).join("")}
+                </div>
               </button>
             `
           )
@@ -1000,8 +1207,11 @@
             (employee) => `
               <button class="selector ${employee.id === currentEmployeeId ? "active" : ""}" onclick="selectEmployee('${employee.id}')">
                 <strong>${employee.name}</strong>
-                <small>${employee.role} · ${employee.mobilityIntent === "active" ? "主动流动" : "开放机会"}</small>
-                <div class="mini-tags">${employee.skills.slice(0, 3).map((item) => `<span class="mini-tag">${item}</span>`).join("")}</div>
+                <small>${employee.role} · ${employee.mobilityIntent === "active" ? "主动流动" : employee.mobilityIntent === "open" ? "开放机会" : "暂稳"}</small>
+                <div class="mini-tags">
+                  ${employee.preferredFunctions.slice(0, 1).map((item) => `<span class="mini-tag">${item}</span>`).join("")}
+                  ${employee.skills.slice(0, 2).map((item) => `<span class="mini-tag">${item}</span>`).join("")}
+                </div>
               </button>
             `
           )
@@ -1059,7 +1269,125 @@
         document.getElementById("employee-matches").innerHTML = matches.map(renderMatchCard).join("");
       }
 
+      function renderLearningPool() {
+        const employee = workspace.employees.find((item) => item.id === currentEmployeeId);
+        const plan = workspace.learningPool[currentEmployeeId];
+        document.getElementById("learning-pool").innerHTML = `
+          <div class="card">
+            <div class="summary-title">
+              <div>
+                <strong>${employee.name}</strong>
+                <div class="muted">${employee.role} · 目标方向：${plan.target}</div>
+              </div>
+              <span class="chip">学习资源池</span>
+            </div>
+            <details class="match-details" open>
+              <summary>
+                <span>查看差距与成长路径</span>
+                <span>${plan.gaps.length} 个待补能力点</span>
+              </summary>
+              <div class="reason-grid">
+                <div class="reason-block">
+                  <strong>差距项</strong>
+                  <ul class="reason-list">${plan.gaps.map((item) => `<li>${item}</li>`).join("")}</ul>
+                </div>
+                <div class="reason-block">
+                  <strong>桥接机会</strong>
+                  <ul class="reason-list">${plan.bridgeRoles.map((item) => `<li>${item}</li>`).join("")}</ul>
+                </div>
+                <div class="reason-block">
+                  <strong>建议课程</strong>
+                  <ul class="reason-list">${plan.courses.map((item) => `<li>${item}</li>`).join("")}</ul>
+                </div>
+                <div class="reason-block">
+                  <strong>建议认证</strong>
+                  <ul class="reason-list">${plan.certifications.map((item) => `<li>${item}</li>`).join("")}</ul>
+                </div>
+              </div>
+            </details>
+          </div>
+        `;
+      }
+
+      function renderBenchmarkList() {
+        const benchmarkIds = Object.keys(workspace.externalBenchmarks);
+        document.getElementById("benchmark-list").innerHTML = benchmarkIds
+          .map((benchmarkId) => {
+            const employee = workspace.employees.find((item) => item.id === benchmarkId);
+            return `
+              <button class="selector ${benchmarkId === currentBenchmarkId ? "active" : ""}" onclick="selectBenchmark('${benchmarkId}')">
+                <strong>${employee.name}</strong>
+                <small>${employee.role} · ${employee.org}</small>
+                <div class="mini-tags">
+                  <span class="mini-tag">内部 benchmark</span>
+                  ${employee.skills.slice(0, 2).map((item) => `<span class="mini-tag">${item}</span>`).join("")}
+                </div>
+              </button>
+            `;
+          })
+          .join("");
+      }
+
+      function renderExternalMatchCard(match) {
+        return `
+          <div class="match-card">
+            <div class="match-head">
+              <div>
+                <strong>${match.targetLabel}</strong>
+                <div class="muted" style="margin-top: 4px;">${match.note}</div>
+              </div>
+              <span class="score-pill ${scoreTone(match.overallScore)}">${match.overallScore}</span>
+            </div>
+            <div class="match-summary-line">
+              <span class="mini-tag">能力相似 ${match.skillScore}</span>
+              <span class="mini-tag">经历相似 ${match.experienceScore}</span>
+              ${match.keywords.map((item) => `<span class="mini-tag">${item}</span>`).join("")}
+            </div>
+            <details class="match-details">
+              <summary>
+                <span>查看外部映射逻辑</span>
+                <span>${match.risks.length ? `风险 ${match.risks.length} 项` : "暂无明显风险"}</span>
+              </summary>
+              <div class="score-grid">
+                <div><span>综合相似度</span><strong>${match.overallScore}</strong></div>
+                <div><span>能力相似度</span><strong>${match.skillScore}</strong></div>
+                <div><span>经历相似度</span><strong>${match.experienceScore}</strong></div>
+              </div>
+              <div class="reason-grid">
+                <div class="reason-block">
+                  <strong>映射依据</strong>
+                  <ul class="reason-list">${match.reasons.map((item) => `<li>${item}</li>`).join("")}</ul>
+                </div>
+                <div class="reason-block">
+                  <strong>验证重点</strong>
+                  <ul class="reason-list">${match.risks.map((item) => `<li>${item}</li>`).join("")}</ul>
+                </div>
+              </div>
+            </details>
+          </div>
+        `;
+      }
+
+      function renderExternalMatches() {
+        const employee = workspace.employees.find((item) => item.id === currentBenchmarkId);
+        const matches = workspace.externalBenchmarks[currentBenchmarkId] || [];
+        document.getElementById("external-matches").innerHTML = `
+          <div class="card" style="margin-bottom: 12px;">
+            <div class="summary-title">
+              <div>
+                <strong>${employee.name}</strong>
+                <div class="muted">${employee.role} · 对标外部优才模板</div>
+              </div>
+              <span class="chip">外部搜索画像</span>
+            </div>
+            <div class="tags">${employee.skills.map((item) => `<span class="tag">${item}</span>`).join("")}</div>
+          </div>
+          ${matches.map(renderExternalMatchCard).join("")}
+        `;
+      }
+
       function renderAll() {
+        renderGoalGrid();
         renderMetrics();
         renderPrinciples();
         renderJobSummary();
@@ -1068,6 +1396,9 @@
         renderEmployeeList();
         renderJobMatches();
         renderEmployeeMatches();
+        renderLearningPool();
+        renderBenchmarkList();
+        renderExternalMatches();
       }
 
       function selectJob(jobId) {
@@ -1080,8 +1411,14 @@
         renderAll();
       }
 
+      function selectBenchmark(benchmarkId) {
+        currentBenchmarkId = benchmarkId;
+        renderAll();
+      }
+
       window.selectJob = selectJob;
       window.selectEmployee = selectEmployee;
+      window.selectBenchmark = selectBenchmark;
       renderAll();
     </script>
   </body>
